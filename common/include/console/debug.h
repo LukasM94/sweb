@@ -83,4 +83,4 @@ const size_t PSEUDOFS           = Ansi_Yellow;
 const size_t VFSSYSCALL         = Ansi_Yellow;
 const size_t VFS                = Ansi_Yellow | OUTPUT_ENABLED;
 
-
+const size_t SHM                = Ansi_Yellow | OUTPUT_ENABLED;

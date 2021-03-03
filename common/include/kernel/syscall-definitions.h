@@ -17,3 +17,5 @@
 #define sc_createprocess 191
 #define sc_trace 252
 
+#define sc_set_string 1000
+#define sc_get_string 1001

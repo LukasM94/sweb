@@ -1,0 +1,13 @@
+#include "shm.h"
+#include "stdio.h"
+
+#define SIZE 64
+
+int main()
+{
+  char* src = "asdfasdfasdfasdfsadfasdf";
+  char dst[SIZE];
+  setString(src);
+  getString(dst, SIZE);
+  printf("%s\n", dst);
+}
