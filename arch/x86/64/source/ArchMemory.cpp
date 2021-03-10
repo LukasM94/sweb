@@ -33,6 +33,42 @@ bool ArchMemory::checkAndRemove(pointer map_ptr, uint64 index)
   return true;
 }
 
+void ArchMemory::mapping(size_t address)
+{
+  debug(MAPPING, "address <%zx>\n", address);
+  uint64 pml4i = (address >> 39) & 0x1ff;
+  uint64 pdpti = (address >> 30) & 0x1ff;
+  uint64 pdi   = (address >> 21) & 0x1ff;
+  uint64 pti   = (address >> 12) & 0x1ff;
+  uint64 os    = address & 0xfff;
+
+  debug(MAPPING, "pml4i <%zx>\n", pml4i);
+  debug(MAPPING, "pdpti <%zx>\n", pdpti);
+  debug(MAPPING, "pdi   <%zx>\n", pdi);
+  debug(MAPPING, "pti   <%zx>\n", pti);
+  debug(MAPPING, "os    <%zx>\n", os);
+
+  PageMapLevel4Entry* pml4 = (PageMapLevel4Entry*)getIdentAddressOfPPN(page_map_level_4_); // cr3
+  if (!pml4[pml4i].present) return;
+  debug(MAPPING, "mapping: pml4[pml4i].page_ppn <%x>\n", pml4[pml4i].page_ppn);
+
+  PageDirPointerTableEntry* pdpt = (PageDirPointerTableEntry*)getIdentAddressOfPPN(pml4[pml4i].page_ppn);
+  if (!pdpt[pdpti].pd.present) return;
+  debug(MAPPING, "mapping: pdpt[pdpti].pd.page_ppn <%x>\n", pdpt[pdpti].pd.page_ppn);
+
+  PageDirEntry* pd = (PageDirEntry*)getIdentAddressOfPPN(pdpt[pdpti].pd.page_ppn);
+  if (!pd[pdi].pt.present) return;
+  debug(MAPPING, "mapping: pd[pdi].pt.page_ppn <%x>\n", pd[pdi].pt.page_ppn);
+  
+  PageTableEntry* pt = (PageTableEntry*)getIdentAddressOfPPN(pd[pdi].pt.page_ppn);
+  if (!pt[pti].present) return;
+  debug(MAPPING, "mapping: pt[pti].page_ppn <%x>\n", pt[pti].page_ppn);
+
+  char* page = (char*)getIdentAddressOfPPN(pt[pti].page_ppn);
+  debug(MAPPING, "mapping: translation was successful\n");
+  debug(MAPPING, "mapping: page[os] <%x>\n", page[os]);
+}
+
 bool ArchMemory::unmapPage(uint64 virtual_page)
 {
   ArchMemoryMapping m = resolveMapping(virtual_page);

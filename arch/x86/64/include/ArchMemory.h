@@ -73,6 +73,8 @@ public:
       return 0xFFFFF00000000000ULL | (address);
     }
 
+    void mapping(size_t address);
+
 /**
  * Checks if a given Virtual Address is valid and is mapped to real memory
  * @param vaddress_to_check Virtual Address we want to check

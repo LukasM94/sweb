@@ -7,6 +7,8 @@
 #include "UserProcess.h"
 #include "ProcessRegistry.h"
 #include "File.h"
+#include "Loader.h"
+#include "ArchMemory.h"
 
 size_t Syscall::syscallException(size_t syscall_number, size_t arg1, size_t arg2, size_t arg3, size_t arg4, size_t arg5)
 {
@@ -20,6 +22,9 @@ size_t Syscall::syscallException(size_t syscall_number, size_t arg1, size_t arg2
 
   switch (syscall_number)
   {
+    case sc_mapping:
+      currentThread->loader_->arch_memory_.mapping(arg1);
+      break;
     case sc_sched_yield:
       Scheduler::instance()->yield();
       break;
